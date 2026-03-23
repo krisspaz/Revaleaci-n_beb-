@@ -36,11 +36,13 @@
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }
 
-.gateEmoji {
-  font-size: 3.5rem;
-  margin-bottom: 20px;
-  display: block;
-  animation: wiggle 2s ease-in-out infinite;
+.gateImage {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  border-radius: 20px;
+  animation: wiggle 3s ease-in-out infinite;
 }
 
 .gateTitle {

@@ -8,7 +8,7 @@ const EVENT_DETAILS = {
   date: "Sábado, 28 de Marzo, 2026",
   time: "4:00 PM",
   location: "Casa de Mis Papis 🏡",
-  message: "Mis papis están súper emocionados y yo también. Ya casi es hora de revelar mi gran secreto, ¡y me encantaría que estés ahí para enterarnos juntos! ¿Seré un príncipe o una princesa? 👶✨"
+  message: "Mis papis están súper emocionados y yo también. Ya casi es hora de revelar mi gran secreto, ¡y me encantaría que estés ahí para enterarnos juntos! ¿Seré un príncipe o una princesa?"
 };
 
 const EVENT_DATE = new Date('2026-03-28T16:00:00');
@@ -43,12 +43,6 @@ export default function Invitation() {
       setAnimateIn(true);
       triggerConfetti();
     }, 300);
-
-    const particleInterval = setInterval(() => {
-      shootSubtleParticles();
-    }, 2500);
-
-    return () => clearInterval(particleInterval);
   }, []);
 
   const triggerConfetti = () => {
@@ -83,24 +77,6 @@ export default function Invitation() {
     }());
   };
 
-  const shootSubtleParticles = () => {
-    confetti({
-      particleCount: 20,
-      startVelocity: 20,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() * 0.6
-      },
-      colors: ['#FF8FAB', '#6EC1E4', '#FFD700', '#E8D5F5'],
-      ticks: 200,
-      gravity: 0.4,
-      scalar: 0.8,
-      shapes: ['circle', 'star'],
-      disableForReducedMotion: true
-    });
-  };
-
   return (
     <>
       <div className={`${styles.container} ${animateIn ? styles.visible : ''}`}>
@@ -110,7 +86,7 @@ export default function Invitation() {
             <Sparkles size={36} color="var(--color-gold)" />
           </div>
           <h1 className={styles.title}>
-            ¡Hola! Aún no me conoces, pero ya quiero celebrar contigo 🎉
+            ¡Hola! Aún no me conoces, pero ya quiero celebrar contigo
           </h1>
           <p className={styles.subtitle}>
             Acompaña a mis papis a descubrir si seré...
@@ -121,7 +97,7 @@ export default function Invitation() {
               <div className={styles.babyImageWrapper}>
                 <img src="/prince.png" alt="Baby Boy" className={styles.babyImage} />
               </div>
-              <span className={styles.boyText}>👦 Un Niño</span>
+              <span className={styles.boyText}>Un Niño</span>
             </div>
 
             <div className={styles.vsText}>¿O?</div>
@@ -130,7 +106,7 @@ export default function Invitation() {
               <div className={styles.babyImageWrapper}>
                 <img src="/princess.png" alt="Baby Girl" className={styles.babyImage} />
               </div>
-              <span className={styles.girlText}>👧 Una Niña</span>
+              <span className={styles.girlText}>Una Niña</span>
             </div>
           </div>
         </header>
@@ -208,8 +184,8 @@ export default function Invitation() {
             <CameraOff className={styles.unpluggedIcon} size={28} />
           </div>
           <div className={styles.unpluggedContent}>
-            <h3>📵 ¡Guarda este recuerdo en tu corazón!</h3>
-            <p>Queremos que este día sea súper íntimo y 100% familiar. Te pedimos amablemente <strong>no usar celulares ni tomar fotos o videos</strong> durante la revelación. ¡Simplemente disfrutemos juntos el momento! 💕</p>
+            <h3>¡Guarda este recuerdo en tu corazón!</h3>
+            <p>Queremos que este día sea súper íntimo y 100% familiar. Te pedimos amablemente <strong>no usar celulares ni tomar fotos o videos</strong> durante la revelación. ¡Simplemente disfrutemos juntos el momento!</p>
           </div>
         </section>
 

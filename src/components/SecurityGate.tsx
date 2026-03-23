@@ -77,7 +77,7 @@ export default function SecurityGate({ children }: SecurityGateProps) {
     return (
       <div className={styles.gateContainer}>
         <div className={styles.gateCard}>
-          <span className={styles.gateEmoji}>👶</span>
+          <img src="/hero-drawing.png" alt="Príncipe y Princesa" className={styles.gateImage} />
           <h1 className={styles.gateTitle}>Revelación de Género</h1>
           <p className={styles.gateSub}>
             Ingresa el código de invitación para ver los detalles del evento.

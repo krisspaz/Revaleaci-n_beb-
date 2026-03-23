@@ -190,6 +190,13 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+.totalVotes {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+}
+
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

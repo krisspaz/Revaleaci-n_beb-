@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { database } from '../firebase';
+import { ref, onValue, runTransaction } from 'firebase/database';
 import styles from './VotingSection.module.css';
 
 export default function VotingSection() {
@@ -8,12 +10,23 @@ export default function VotingSection() {
   const [userVote, setUserVote] = useState<'boy' | 'girl' | null>(null);
 
   useEffect(() => {
+    // Check if user already voted on this device
     const storedVote = localStorage.getItem('genderRevealVote') as 'boy' | 'girl' | null;
     if (storedVote) {
       setUserVote(storedVote);
-      if (storedVote === 'boy') setVotesBoy(prev => prev + 1);
-      if (storedVote === 'girl') setVotesGirl(prev => prev + 1);
     }
+
+    // Listen to real-time vote counts from Firebase
+    const votesRef = ref(database, 'votes');
+    const unsubscribe = onValue(votesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setVotesBoy(data.boy || 0);
+        setVotesGirl(data.girl || 0);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleVote = (gender: 'boy' | 'girl') => {
@@ -22,29 +35,25 @@ export default function VotingSection() {
     setUserVote(gender);
     localStorage.setItem('genderRevealVote', gender);
 
-    if (gender === 'boy') {
-      setVotesBoy(prev => prev + 1);
-      // Mini confetti blue burst
-      confetti({
-        particleCount: 50,
-        spread: 80,
-        origin: { y: 0.7, x: 0.3 },
-        colors: ['#6EC1E4', '#A3DBF1', '#FFFFFF'],
-        scalar: 1.2,
-        shapes: ['circle', 'star'],
-      });
-    } else {
-      setVotesGirl(prev => prev + 1);
-      // Mini confetti pink burst
-      confetti({
-        particleCount: 50,
-        spread: 80,
-        origin: { y: 0.7, x: 0.7 },
-        colors: ['#FF8FAB', '#FFB8CC', '#FFFFFF'],
-        scalar: 1.2,
-        shapes: ['circle', 'star'],
-      });
-    }
+    // Atomically increment the vote count in Firebase
+    const voteRef = ref(database, `votes/${gender}`);
+    runTransaction(voteRef, (currentCount) => {
+      return (currentCount || 0) + 1;
+    });
+
+    // Mini confetti burst
+    const colors = gender === 'boy' 
+      ? ['#6EC1E4', '#A3DBF1', '#FFFFFF']
+      : ['#FF8FAB', '#FFB8CC', '#FFFFFF'];
+    
+    confetti({
+      particleCount: 50,
+      spread: 80,
+      origin: { y: 0.7, x: gender === 'boy' ? 0.3 : 0.7 },
+      colors,
+      scalar: 1.2,
+      shapes: ['circle', 'star'],
+    });
   };
 
   const totalVotes = votesBoy + votesGirl;
@@ -53,7 +62,7 @@ export default function VotingSection() {
 
   return (
     <section className={styles.votingContainer}>
-      <h2 className={styles.votingTitle}>¿Qué crees que seré? 🤔</h2>
+      <h2 className={styles.votingTitle}>¿Qué crees que seré?</h2>
       <p className={styles.votingSubtitle}>¡Deja tu apuesta y mira qué opinan los demás!</p>
 
       <div className={styles.cardsContainer}>
@@ -80,7 +89,7 @@ export default function VotingSection() {
 
       {userVote && (
         <div className={styles.resultsContainer}>
-          <p className={styles.thanksMessage}>🎉 ¡Gracias por votar!</p>
+          <p className={styles.thanksMessage}>¡Gracias por votar!</p>
           <div className={styles.progressBarWrapper}>
             <div className={styles.progressBarResult}>
               <div
@@ -97,6 +106,7 @@ export default function VotingSection() {
               </div>
             </div>
           </div>
+          <p className={styles.totalVotes}>{totalVotes} votos en total</p>
         </div>
       )}
     </section>

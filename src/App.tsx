@@ -3,8 +3,6 @@ import SecurityGate from './components/SecurityGate';
 import Invitation from './components/Invitation';
 import './App.css';
 
-const FLOATING_EMOJIS = ['⭐', '💕', '✨', '🌟', '💖', '✨'];
-
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -21,13 +19,6 @@ function App() {
       <div className="app-bg-glow-pink"></div>
       <div className="app-bg-glow-blue"></div>
       <div className="app-bg-glow-lavender"></div>
-
-      {/* Floating emoji decorations */}
-      <div className="floating-emojis">
-        {FLOATING_EMOJIS.map((emoji, i) => (
-          <span key={i} className="float-item">{emoji}</span>
-        ))}
-      </div>
 
       {loading ? (
         <div className="loading-screen">
