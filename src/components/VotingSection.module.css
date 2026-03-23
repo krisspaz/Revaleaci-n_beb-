@@ -1,0 +1,203 @@
+.votingContainer {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(15px);
+  border-radius: var(--border-radius-xl);
+  padding: 35px 25px;
+  margin-bottom: 15px;
+  box-shadow: 0 15px 40px rgba(255, 143, 171, 0.06),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.6s ease-out both;
+}
+
+.votingTitle {
+  font-size: 2rem;
+  background: var(--gradient-btn);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  font-family: var(--font-heading);
+}
+
+.votingSubtitle {
+  color: var(--color-text-light);
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+.cardsContainer {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.voteCard {
+  flex: 1;
+  padding: 25px 15px;
+  border-radius: var(--border-radius-xl);
+  border: 3px solid transparent;
+  transition: var(--transition-bouncy);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.voteCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  border-radius: calc(var(--border-radius-xl) - 3px);
+  transition: opacity 0.3s ease;
+}
+
+.voteCard:not(:disabled):hover::before {
+  opacity: 1;
+}
+
+.voteEmoji {
+  font-size: 2.5rem;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.voteCard:not(:disabled):hover .voteEmoji {
+  transform: scale(1.2) rotate(-5deg);
+}
+
+.voteCard h3 {
+  font-size: 1.3rem;
+  font-family: var(--font-heading);
+  font-style: italic;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.voteCard:not(:disabled):hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.cardBoy {
+  background: linear-gradient(160deg, #E8F4FD 0%, #D4EDFC 100%);
+  color: var(--color-blue);
+}
+
+.cardBoy:not(:disabled):hover {
+  border-color: var(--color-blue);
+  box-shadow: 0 12px 30px var(--color-blue-glow);
+}
+
+.cardGirl {
+  background: linear-gradient(160deg, #FFF0F4 0%, #FFE0EA 100%);
+  color: var(--color-pink);
+}
+
+.cardGirl:not(:disabled):hover {
+  border-color: var(--color-pink);
+  box-shadow: 0 12px 30px var(--color-pink-glow);
+}
+
+.selected {
+  transform: scale(1.05);
+  border-color: currentColor;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.selected .voteEmoji {
+  animation: celebrateVote 0.6s ease-out;
+}
+
+.dimmed {
+  opacity: 0.45;
+  filter: grayscale(60%);
+  transform: scale(0.96);
+}
+
+.voteCount {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-top: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.resultsContainer {
+  margin-top: 25px;
+  animation: slideUp 0.5s ease;
+}
+
+.thanksMessage {
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.progressBarWrapper {
+  width: 100%;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.progressBarResult {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.barBoy {
+  background: linear-gradient(90deg, #6EC1E4, #A3DBF1);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.barGirl {
+  background: linear-gradient(90deg, #FFB8CC, #FF8FAB);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes celebrateVote {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4) rotate(-10deg); }
+  60% { transform: scale(0.9) rotate(5deg); }
+  100% { transform: scale(1.2) rotate(0deg); }
+}
