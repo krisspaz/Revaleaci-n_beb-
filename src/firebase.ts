@@ -2,14 +2,14 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD6HyYJs1gOIZmHuIwzScf1mJ6EaWSOglI",
-  authDomain: "gender-reveal-bd38b.firebaseapp.com",
-  databaseURL: "https://gender-reveal-bd38b-default-rtdb.firebaseio.com",
-  projectId: "gender-reveal-bd38b",
-  storageBucket: "gender-reveal-bd38b.firebasestorage.app",
-  messagingSenderId: "388440225736",
-  appId: "1:388440225736:web:7b221db09ff5bc7ce072fd",
-  measurementId: "G-JMCRKBM77C"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
