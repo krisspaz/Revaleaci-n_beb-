@@ -11,7 +11,7 @@ export default function VotingSection() {
 
   useEffect(() => {
     // Check if user already voted on this device
-    const storedVote = localStorage.getItem('genderRevealVote') as 'boy' | 'girl' | null;
+    const storedVote = localStorage.getItem('genderRevealVote_v2') as 'boy' | 'girl' | null;
     if (storedVote) {
       setUserVote(storedVote);
     }
@@ -33,7 +33,7 @@ export default function VotingSection() {
     if (userVote) return;
 
     setUserVote(gender);
-    localStorage.setItem('genderRevealVote', gender);
+    localStorage.setItem('genderRevealVote_v2', gender);
 
     // Atomically increment the vote count in Firebase
     const voteRef = ref(database, `votes/${gender}`);
@@ -42,10 +42,10 @@ export default function VotingSection() {
     });
 
     // Mini confetti burst
-    const colors = gender === 'boy' 
+    const colors = gender === 'boy'
       ? ['#6EC1E4', '#A3DBF1', '#FFFFFF']
       : ['#FF8FAB', '#FFB8CC', '#FFFFFF'];
-    
+
     confetti({
       particleCount: 50,
       spread: 80,
@@ -63,7 +63,7 @@ export default function VotingSection() {
   return (
     <section className={styles.votingContainer}>
       <h2 className={styles.votingTitle}>¿Qué crees que seré?</h2>
-      <p className={styles.votingSubtitle}>¡Deja tu apuesta y mira qué opinan los demás!</p>
+      <p className={styles.votingSubtitle}>¡Deja tu voto y mira qué opinan los demás!</p>
 
       <div className={styles.cardsContainer}>
         <button
@@ -71,7 +71,7 @@ export default function VotingSection() {
           onClick={() => handleVote('boy')}
           disabled={userVote !== null}
         >
-          <span className={styles.voteEmoji}>👦</span>
+          <img src="/prince.png" alt="Niño" className={styles.voteImage} />
           <h3>Niño</h3>
           {userVote && <span className={styles.voteCount}>{votesBoy} votos</span>}
         </button>
@@ -81,7 +81,7 @@ export default function VotingSection() {
           onClick={() => handleVote('girl')}
           disabled={userVote !== null}
         >
-          <span className={styles.voteEmoji}>👧</span>
+          <img src="/princess.png" alt="Niña" className={styles.voteImage} />
           <h3>Niña</h3>
           {userVote && <span className={styles.voteCount}>{votesGirl} votos</span>}
         </button>

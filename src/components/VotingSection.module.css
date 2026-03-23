@@ -65,13 +65,17 @@
   opacity: 1;
 }
 
-.voteEmoji {
-  font-size: 2.5rem;
+.voteImage {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  margin-bottom: 5px;
   display: block;
   transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-.voteCard:not(:disabled):hover .voteEmoji {
+.voteCard:not(:disabled):hover .voteImage {
   transform: scale(1.2) rotate(-5deg);
 }
 
@@ -115,7 +119,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
-.selected .voteEmoji {
+.selected .voteImage {
   animation: celebrateVote 0.6s ease-out;
 }
 

@@ -22,7 +22,7 @@ function App() {
 
       {loading ? (
         <div className="loading-screen">
-          <div className="loading-emoji">👶</div>
+          <img src="/baby-drawing.png" alt="Cargando" className="loading-image" />
           <p>Preparando la sorpresa...</p>
           <div className="loading-dots">
             <span></span>

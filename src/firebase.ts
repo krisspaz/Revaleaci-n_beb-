@@ -1,18 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
-// TODO: Replace with your Firebase project config
-// Go to https://console.firebase.google.com → Create project → 
-// Build → Realtime Database → Create Database (test mode) →
-// Project Settings → Your apps → Web app → Copy config
 const firebaseConfig = {
-  apiKey: "AIzaSyD_placeholder_replace_me",
-  authDomain: "your-project.firebaseapp.com",
-  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:placeholder"
+  apiKey: "AIzaSyD6HyYJs1gOIZmHuIwzScf1mJ6EaWSOglI",
+  authDomain: "gender-reveal-bd38b.firebaseapp.com",
+  databaseURL: "https://gender-reveal-bd38b-default-rtdb.firebaseio.com",
+  projectId: "gender-reveal-bd38b",
+  storageBucket: "gender-reveal-bd38b.firebasestorage.app",
+  messagingSenderId: "388440225736",
+  appId: "1:388440225736:web:7b221db09ff5bc7ce072fd",
+  measurementId: "G-JMCRKBM77C"
 };
 
 const app = initializeApp(firebaseConfig);
