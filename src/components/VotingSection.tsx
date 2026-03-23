@@ -16,17 +16,22 @@ export default function VotingSection() {
       setUserVote(storedVote);
     }
 
-    // Listen to real-time vote counts from Firebase
-    const votesRef = ref(database, 'votes');
-    const unsubscribe = onValue(votesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setVotesBoy(data.boy || 0);
-        setVotesGirl(data.girl || 0);
-      }
-    });
+    if (!database) return;
 
-    return () => unsubscribe();
+    // Listen to real-time vote counts from Firebase
+    try {
+      const votesRef = ref(database, 'votes');
+      const unsubscribe = onValue(votesRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setVotesBoy(data.boy || 0);
+          setVotesGirl(data.girl || 0);
+        }
+      });
+      return () => unsubscribe();
+    } catch (e) {
+      console.warn("Firebase not configured");
+    }
   }, []);
 
   const handleVote = (gender: 'boy' | 'girl') => {
@@ -36,10 +41,22 @@ export default function VotingSection() {
     localStorage.setItem('genderRevealVote_v2', gender);
 
     // Atomically increment the vote count in Firebase
-    const voteRef = ref(database, `votes/${gender}`);
-    runTransaction(voteRef, (currentCount) => {
-      return (currentCount || 0) + 1;
-    });
+    if (database) {
+      try {
+        const voteRef = ref(database, `votes/${gender}`);
+        runTransaction(voteRef, (currentCount) => {
+          return (currentCount || 0) + 1;
+        });
+      } catch (e) {
+        // Fallback for local testing without Firebase
+        if (gender === 'boy') setVotesBoy(prev => prev + 1);
+        else setVotesGirl(prev => prev + 1);
+      }
+    } else {
+      // Fallback for local testing without Firebase
+      if (gender === 'boy') setVotesBoy(prev => prev + 1);
+      else setVotesGirl(prev => prev + 1);
+    }
 
     // Mini confetti burst
     const colors = gender === 'boy'
