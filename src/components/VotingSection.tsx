@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { database } from '../firebase';
-import { ref, onValue, runTransaction } from 'firebase/database';
+import { supabase } from '../supabase';
 import styles from './VotingSection.module.css';
 
 export default function VotingSection() {
@@ -10,53 +9,57 @@ export default function VotingSection() {
   const [userVote, setUserVote] = useState<'boy' | 'girl' | null>(null);
 
   useEffect(() => {
-    // Check if user already voted on this device
-    const storedVote = localStorage.getItem('genderRevealVote_v2') as 'boy' | 'girl' | null;
+    // Check if user already voted on this device (local cache)
+    const storedVote = localStorage.getItem('genderRevealVote_v3') as 'boy' | 'girl' | null;
     if (storedVote) {
       setUserVote(storedVote);
     }
 
-    if (!database) return;
+    // Fetch initial votes from Supabase
+    const fetchVotes = async () => {
+      const { data, error } = await supabase
+        .from('votes')
+        .select('*')
+        .eq('id', 1)
+        .single();
+        
+      if (!error && data) {
+        setVotesBoy(data.boy || 0);
+        setVotesGirl(data.girl || 0);
+      }
+    };
 
-    // Listen to real-time vote counts from Firebase
-    try {
-      const votesRef = ref(database, 'votes');
-      const unsubscribe = onValue(votesRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setVotesBoy(data.boy || 0);
-          setVotesGirl(data.girl || 0);
+    fetchVotes();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('votes_changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'votes', filter: 'id=eq.1' },
+        (payload) => {
+          if (payload.new) {
+            setVotesBoy(payload.new.boy || 0);
+            setVotesGirl(payload.new.girl || 0);
+          }
         }
-      });
-      return () => unsubscribe();
-    } catch (e) {
-      console.warn("Firebase not configured");
-    }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  const handleVote = (gender: 'boy' | 'girl') => {
+  const handleVote = async (gender: 'boy' | 'girl') => {
     if (userVote) return;
 
     setUserVote(gender);
-    localStorage.setItem('genderRevealVote_v2', gender);
+    localStorage.setItem('genderRevealVote_v3', gender); // v3 to reset local testing again
 
-    // Atomically increment the vote count in Firebase
-    if (database) {
-      try {
-        const voteRef = ref(database, `votes/${gender}`);
-        runTransaction(voteRef, (currentCount) => {
-          return (currentCount || 0) + 1;
-        });
-      } catch (e) {
-        // Fallback for local testing without Firebase
-        if (gender === 'boy') setVotesBoy(prev => prev + 1);
-        else setVotesGirl(prev => prev + 1);
-      }
-    } else {
-      // Fallback for local testing without Firebase
-      if (gender === 'boy') setVotesBoy(prev => prev + 1);
-      else setVotesGirl(prev => prev + 1);
-    }
+    // Call Supabase RPC function to atomically increment votes
+    const columnToIncrement = gender === 'boy' ? 'boy' : 'girl';
+    await supabase.rpc('increment_vote', { row_id: 1, gender_column: columnToIncrement });
 
     // Mini confetti burst
     const colors = gender === 'boy'
