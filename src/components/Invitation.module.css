@@ -288,6 +288,25 @@
   font-weight: 600;
 }
 
+.locationButton {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 16px;
+  background: var(--gradient-btn);
+  color: var(--color-white);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 10px var(--color-pink-glow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.locationButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px var(--color-pink-glow);
+}
+
 .divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--color-lavender), transparent);

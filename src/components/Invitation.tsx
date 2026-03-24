@@ -175,6 +175,14 @@ export default function Invitation() {
             <div>
               <h3>Ubicación</h3>
               <p>{EVENT_DETAILS.location}</p>
+              <a 
+                href="https://maps.app.goo.gl/pnCEhrgJXEyrHgnw6" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className={styles.locationButton}
+              >
+                📍 Ver mapa
+              </a>
             </div>
           </div>
 
