@@ -55,16 +55,22 @@ export default function VotingSection() {
     if (userVote) return;
 
     const guestName = localStorage.getItem('guestName') || 'Anónimo';
+    const guestId = localStorage.getItem('guestId');
 
     setUserVote(gender);
     localStorage.setItem('genderRevealVote_v4', gender); // v4 to reset local testing
 
-    // Insert individual vote to track names
-    const { error: insertError } = await supabase.from('guest_votes').insert([
-      { guest_name: guestName, vote: gender }
-    ]);
-    if (insertError) {
-      console.error('Error saving vote:', insertError);
+    if (guestId) {
+      // Si ya tenemos el ID de cuando entró, actualizamos esa fila
+      const { error: updateError } = await supabase
+        .from('guests')
+        .update({ vote: gender })
+        .eq('id', guestId);
+      
+      if (updateError) console.error('Error updating vote:', updateError);
+    } else {
+      // Fallback por si acaso no hay ID guardado
+      await supabase.from('guests').insert([{ name: guestName, vote: gender }]);
     }
 
     // Call Supabase RPC function to atomically increment votes for global counters

@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react';
+import { supabase } from '../supabase';
 import styles from './SecurityGate.module.css';
 
 interface SecurityGateProps {
@@ -48,12 +49,25 @@ export default function SecurityGate({ children }: SecurityGateProps) {
     };
   }, []);
 
-  const handleNameSubmit = (e: React.FormEvent) => {
+  const handleNameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (guestName.trim().length > 0) {
-      localStorage.setItem('guestName', guestName.trim());
+    const trimmedName = guestName.trim();
+    if (trimmedName.length > 0) {
+      localStorage.setItem('guestName', trimmedName);
       setIsUnlocked(true);
       setError(false);
+
+      // Registrar la entrada inmediatamente en Supabase aunque no vote
+      const { data, error } = await supabase
+        .from('guests')
+        .insert([{ name: trimmedName }])
+        .select('id')
+        .single();
+
+      if (data && !error) {
+        localStorage.setItem('guestId', data.id);
+      }
+      
     } else {
       setError(true);
     }
