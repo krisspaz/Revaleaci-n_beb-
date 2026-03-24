@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import confetti from 'canvas-confetti';
-import { Calendar, Clock, MapPin, Heart, Sparkles, CameraOff } from 'lucide-react';
+import { Calendar, Clock, MapPin, Heart, Sparkles, CameraOff, Shirt } from 'lucide-react';
 import styles from './Invitation.module.css';
 import VotingSection from './VotingSection';
 
@@ -175,6 +175,18 @@ export default function Invitation() {
             <div>
               <h3>Ubicación</h3>
               <p>{EVENT_DETAILS.location}</p>
+            </div>
+          </div>
+
+          <div className={styles.divider}></div>
+
+          <div className={styles.detailItem}>
+            <div className={styles.detailIconWrap}>
+              <Shirt className={styles.detailIcon} />
+            </div>
+            <div>
+              <h3>Código de Vestimenta</h3>
+              <p>Playeras Blancas 🤍</p>
             </div>
           </div>
         </section>

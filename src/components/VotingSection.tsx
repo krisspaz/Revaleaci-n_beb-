@@ -54,10 +54,20 @@ export default function VotingSection() {
   const handleVote = async (gender: 'boy' | 'girl') => {
     if (userVote) return;
 
+    const guestName = localStorage.getItem('guestName') || 'Anónimo';
+
     setUserVote(gender);
     localStorage.setItem('genderRevealVote_v4', gender); // v4 to reset local testing
 
-    // Call Supabase RPC function to atomically increment votes
+    // Insert individual vote to track names
+    const { error: insertError } = await supabase.from('guest_votes').insert([
+      { guest_name: guestName, vote: gender }
+    ]);
+    if (insertError) {
+      console.error('Error saving vote:', insertError);
+    }
+
+    // Call Supabase RPC function to atomically increment votes for global counters
     const columnToIncrement = gender === 'boy' ? 'boy' : 'girl';
     await supabase.rpc('increment_vote', { row_id: 1, gender_column: columnToIncrement });
 

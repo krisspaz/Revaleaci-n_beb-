@@ -5,11 +5,9 @@ interface SecurityGateProps {
   children: ReactNode;
 }
 
-const CORRECT_PIN = 'BABY2026';
-
 export default function SecurityGate({ children }: SecurityGateProps) {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [pin, setPin] = useState('');
+  const [guestName, setGuestName] = useState('');
   const [error, setError] = useState(false);
   const [isObscured, setIsObscured] = useState(false);
 
@@ -50,14 +48,14 @@ export default function SecurityGate({ children }: SecurityGateProps) {
     };
   }, []);
 
-  const handlePinSubmit = (e: React.FormEvent) => {
+  const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin.toUpperCase() === CORRECT_PIN) {
+    if (guestName.trim().length > 0) {
+      localStorage.setItem('guestName', guestName.trim());
       setIsUnlocked(true);
       setError(false);
     } else {
       setError(true);
-      setPin('');
     }
   };
 
@@ -80,17 +78,17 @@ export default function SecurityGate({ children }: SecurityGateProps) {
           <img src="/hero-drawing.png" alt="Príncipe y Princesa" className={styles.gateImage} />
           <h1 className={styles.gateTitle}>Revelación de Género</h1>
           <p className={styles.gateSub}>
-            Ingresa el código de invitación para ver los detalles del evento.
+            Por favor, escribe tu nombre para ver los detalles del evento y poder votar.
           </p>
-          <form onSubmit={handlePinSubmit} className={styles.gateForm}>
+          <form onSubmit={handleNameSubmit} className={styles.gateForm}>
             <input
               type="text"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              placeholder="Código de Acceso"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              placeholder="Tu Nombre"
               className={`${styles.pinInput} ${error ? styles.errorInput : ''}`}
             />
-            {error && <p className={styles.errorText}>Código incorrecto. Intenta de nuevo.</p>}
+            {error && <p className={styles.errorText}>Por favor, ingresa tu nombre.</p>}
             <button type="submit" className={styles.unlockButton}>
               Entrar 💕
             </button>
