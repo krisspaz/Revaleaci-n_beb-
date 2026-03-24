@@ -10,7 +10,7 @@ export default function VotingSection() {
 
   useEffect(() => {
     // Check if user already voted on this device (local cache)
-    const storedVote = localStorage.getItem('genderRevealVote_v4') as 'boy' | 'girl' | null;
+    const storedVote = localStorage.getItem('genderRevealVote_v5') as 'boy' | 'girl' | null;
     if (storedVote) {
       setUserVote(storedVote);
     }
@@ -58,7 +58,7 @@ export default function VotingSection() {
     const guestId = localStorage.getItem('guestId');
 
     setUserVote(gender);
-    localStorage.setItem('genderRevealVote_v4', gender); // v4 to reset local testing
+    localStorage.setItem('genderRevealVote_v5', gender); // v5 to reset local testing
 
     if (guestId) {
       // Si ya tenemos el ID de cuando entró, actualizamos esa fila
