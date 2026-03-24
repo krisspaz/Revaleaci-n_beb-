@@ -5,7 +5,7 @@ import styles from './Invitation.module.css';
 import VotingSection from './VotingSection';
 
 const EVENT_DETAILS = {
-  date: "Sábado, 28 de Marzo, 2026",
+  date: "Domingo, 29 de Marzo, 2026",
   time: "4:00 PM",
   location: "Casa de Mis Papis 🏡",
   message: "Mis papis están súper emocionados y yo también. Ya casi es hora de revelar mi gran secreto, ¡y me encantaría que estés ahí para enterarnos juntos! ¿Seré un príncipe o una princesa?"
