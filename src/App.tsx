@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import SecurityGate from './components/SecurityGate';
 import Invitation from './components/Invitation';
+import ScreenShield from './components/ScreenShield';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <ScreenShield />
       {/* Animated background orbs */}
       <div className="app-bg-glow-pink"></div>
       <div className="app-bg-glow-blue"></div>
