@@ -27,9 +27,11 @@ export default function ScreenShield() {
 
   const flashShield = useCallback(() => {
     setShieldActive(true);
+    document.body.classList.add('shield-blackout');
     if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
     warningTimeoutRef.current = setTimeout(() => {
       setShieldActive(false);
+      document.body.classList.remove('shield-blackout');
     }, 2000);
   }, []);
 
@@ -86,31 +88,39 @@ export default function ScreenShield() {
     // ============================================
 
     // CAPA 1: Detectar cambio de visibilidad (Page Visibility API)
-    // Solo se activa cuando la pestaña está COMPLETAMENTE oculta (minimizar, etc)
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Solo blur cuando la pestaña se oculta completamente
-        document.body.classList.add('shield-blur');
+        document.body.classList.add('shield-blackout');
       } else {
-        // Al volver, quitar blur rápido para no molestar al usuario
         setTimeout(() => {
-          document.body.classList.remove('shield-blur');
+          document.body.classList.remove('shield-blackout');
         }, 300);
       }
     };
 
-    // CAPA 2: Detectar cambio de tamaño súbito (solo mobile)
-    // iOS hace una animación de resize cuando toma screenshot
+    // CAPA 2: Detectar BLUR de ventana (Gesto de screenshot)
+    const handleWindowBlur = () => {
+      document.body.classList.add('shield-blackout');
+      // No llamamos a flashShield aquí para evitar el overlay de texto 
+      // y que se vea más como un bloqueo técnico (Disney+)
+    };
+
+    const handleWindowFocus = () => {
+      setTimeout(() => {
+        document.body.classList.remove('shield-blackout');
+      }, 500);
+    };
+
+    // CAPA 3: Detectar cambio de tamaño súbito (solo mobile)
     let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const handleResize = () => {
-      if (!isMobile) return; // Solo en móviles
+      if (!isMobile) return;
       const now = Date.now();
       if (now - lastResizeRef.current < 300) {
         flashShield();
       }
       lastResizeRef.current = now;
-      clearTimeout(resizeTimeout);
     };
 
     // CAPA 4: Bloquear multi-touch (3+ dedos = screenshot en iPad)
@@ -188,6 +198,8 @@ export default function ScreenShield() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     document.addEventListener('dragstart', blockDrag, true);
     window.addEventListener('resize', handleResize);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
     document.addEventListener('touchstart', handleTouchStart, { passive: false });
     document.addEventListener('touchstart', handleTouchStartLongPress, { passive: true });
     document.addEventListener('touchend', handleTouchEnd);
@@ -211,6 +223,8 @@ export default function ScreenShield() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.removeEventListener('dragstart', blockDrag, true);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchstart', handleTouchStartLongPress);
       document.removeEventListener('touchend', handleTouchEnd);
@@ -234,36 +248,25 @@ export default function ScreenShield() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 999998,
-          background: 'rgba(0, 0, 0, 0.95)',
+          background: '#000',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '15px',
-          animation: 'shieldFadeIn 0.15s ease-out',
-          backdropFilter: 'blur(40px)',
-          WebkitBackdropFilter: 'blur(40px)',
+          animation: 'shieldFadeIn 0.1s ease-out',
+          zIndex: 999999,
         }}>
-          <div style={{ fontSize: '3.5rem', animation: 'shieldPulse 0.6s ease-in-out' }}>🛡️</div>
+          <div style={{ fontSize: '3.5rem' }}>🔒</div>
           <p style={{
             color: '#fff',
-            fontSize: '1.2rem',
-            fontWeight: 700,
+            fontSize: '1.3rem',
+            fontWeight: 800,
             fontFamily: 'var(--font-body)',
             textAlign: 'center',
-            padding: '0 20px',
+            letterSpacing: '1px'
           }}>
-            ¡Capturas de pantalla no permitidas! 📵
-          </p>
-          <p style={{
-            color: 'rgba(255,255,255,0.5)',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-body)',
-            textAlign: 'center',
-            maxWidth: '280px',
-          }}>
-            Este contenido está protegido. Disfruta el momento ✨
+            PROTECTED CONTENT
           </p>
         </div>
       )}
@@ -298,14 +301,25 @@ export default function ScreenShield() {
           50% { transform: scale(1.3); }
         }
 
-        /* Blur ultra-agresivo cuando se activa */
-        .shield-blur .app-container {
-          filter: blur(50px) brightness(0.3) !important;
-          transition: filter 0.05s !important;
+        /* Blackout estilo Disney+ */
+        .shield-blackout .app-container,
+        .shield-blackout canvas,
+        .shield-blackout #root > div {
+          opacity: 0 !important;
+          visibility: hidden !important;
+          transition: none !important;
         }
-        .shield-blur .app-container * {
-          filter: blur(30px) !important;
-          transition: filter 0.05s !important;
+
+        body.shield-blackout {
+          background: #000 !important;
+        }
+
+        .shield-blackout::after {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background: #000 !important;
+          z-index: 999997;
         }
 
         /* Protección de imágenes */
