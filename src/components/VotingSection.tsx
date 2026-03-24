@@ -10,7 +10,7 @@ export default function VotingSection() {
 
   useEffect(() => {
     // Check if user already voted on this device (local cache)
-    const storedVote = localStorage.getItem('genderRevealVote_v5') as 'boy' | 'girl' | null;
+    const storedVote = localStorage.getItem('genderRevealVote_v6') as 'boy' | 'girl' | null;
     if (storedVote) {
       setUserVote(storedVote);
     }
@@ -58,7 +58,7 @@ export default function VotingSection() {
     const guestId = localStorage.getItem('guestId');
 
     setUserVote(gender);
-    localStorage.setItem('genderRevealVote_v5', gender); // v5 to reset local testing
+    localStorage.setItem('genderRevealVote_v6', gender); // v6 to reset local testing
 
     if (guestId) {
       // Si ya tenemos el ID de cuando entró, actualizamos esa fila
@@ -109,6 +109,9 @@ export default function VotingSection() {
         >
           <img src="/prince.png" alt="Niño" className={styles.voteImage} />
           <h3>Niño</h3>
+          <p style={{ fontSize: '0.85rem', margin: '8px 0', opacity: 0.8 }}>
+            Sugerencia de regalo:<br/><b>Pañales desechables</b><br/>(6 meses, NO recién nacido)
+          </p>
           {userVote && <span className={styles.voteCount}>{votesBoy} votos</span>}
         </button>
 
@@ -119,6 +122,9 @@ export default function VotingSection() {
         >
           <img src="/princess.png" alt="Niña" className={styles.voteImage} />
           <h3>Niña</h3>
+          <p style={{ fontSize: '0.85rem', margin: '8px 0', opacity: 0.8 }}>
+            Sugerencia de regalo:<br/><b>Pañales de tela</b><br/>(6 meses, NO recién nacido)
+          </p>
           {userVote && <span className={styles.voteCount}>{votesGirl} votos</span>}
         </button>
       </div>
