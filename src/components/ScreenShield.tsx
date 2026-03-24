@@ -22,7 +22,6 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 
 export default function ScreenShield() {
   const [shieldActive, setShieldActive] = useState(false);
-  const [devToolsOpen, setDevToolsOpen] = useState(false);
   const warningTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastResizeRef = useRef<number>(0);
 
@@ -168,14 +167,7 @@ export default function ScreenShield() {
       styles.forEach(([prop, val]) => document.body.style.setProperty(prop, val));
     };
 
-    // CAPA 9: DevTools detection
-    const detectDevTools = () => {
-      const threshold = 300; // Más alto para evitar falsos positivos
-      const widthDiff = window.outerWidth - window.innerWidth > threshold;
-      const heightDiff = window.outerHeight - window.innerHeight > threshold;
-      setDevToolsOpen(widthDiff || heightDiff);
-    };
-    const devToolsInterval = setInterval(detectDevTools, 1000);
+
 
     // CAPA 10: Proteger imágenes dinámicamente
     const protectImages = () => {
@@ -223,7 +215,6 @@ export default function ScreenShield() {
       document.removeEventListener('touchstart', handleTouchStartLongPress);
       document.removeEventListener('touchend', handleTouchEnd);
       document.removeEventListener('touchcancel', handleTouchEnd);
-      clearInterval(devToolsInterval);
       clearTimeout(resizeTimeout);
       clearTimeout(longPressTimer);
       imgObserver.disconnect();
@@ -231,45 +222,7 @@ export default function ScreenShield() {
     };
   }, [flashShield]);
 
-  // ============================================
-  // === RENDER: DEVTOOLS DETECTADO =============
-  // ============================================
-  if (devToolsOpen) {
-    return (
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 999999,
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '20px',
-        color: '#fff',
-        fontFamily: 'var(--font-body)',
-      }}>
-        <div style={{ fontSize: '4rem' }}>🔒</div>
-        <h2 style={{ 
-          fontSize: '1.5rem', 
-          background: 'var(--gradient-btn)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          textAlign: 'center',
-        }}>
-          Contenido Protegido
-        </h2>
-        <p style={{ 
-          color: 'rgba(255,255,255,0.6)', 
-          textAlign: 'center',
-          maxWidth: '300px',
-          lineHeight: 1.6,
-        }}>
-          Por favor cierra las herramientas de desarrollador para ver la invitación
-        </p>
-      </div>
-    );
-  }
+
 
   // ============================================
   // === RENDER: PROTECCIONES ACTIVAS ===========
