@@ -25,17 +25,13 @@ export default function ScreenShield() {
   const [devToolsOpen, setDevToolsOpen] = useState(false);
   const warningTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastResizeRef = useRef<number>(0);
-  const blurCountRef = useRef<number>(0);
-  const lastBlurTimeRef = useRef<number>(0);
 
   const flashShield = useCallback(() => {
     setShieldActive(true);
-    document.body.classList.add('shield-blur');
     if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
     warningTimeoutRef.current = setTimeout(() => {
       setShieldActive(false);
-      document.body.classList.remove('shield-blur');
-    }, 2500);
+    }, 2000);
   }, []);
 
   useEffect(() => {
@@ -90,54 +86,32 @@ export default function ScreenShield() {
     // === PROTECCIONES MOBILE - MULTI-CAPA =======
     // ============================================
 
-    // CAPA 1: Detectar BLUR de ventana
-    // En iOS/Android, cuando tomas screenshot el browser pierde foco brevemente
-    const handleWindowBlur = () => {
-      const now = Date.now();
-      blurCountRef.current += 1;
-      lastBlurTimeRef.current = now;
-      
-      // Activar protección inmediatamente
-      document.body.classList.add('shield-blur');
-      flashShield();
-    };
-
-    const handleWindowFocus = () => {
-      // Al recuperar foco, mantener blur un momento más
-      setTimeout(() => {
-        if (Date.now() - lastBlurTimeRef.current > 1500) {
-          document.body.classList.remove('shield-blur');
-        }
-      }, 1000);
-    };
-
-    // CAPA 2: Detectar cambio de visibilidad (Page Visibility API)
+    // CAPA 1: Detectar cambio de visibilidad (Page Visibility API)
+    // Solo se activa cuando la pestaña está COMPLETAMENTE oculta (minimizar, etc)
     const handleVisibilityChange = () => {
       if (document.hidden) {
+        // Solo blur cuando la pestaña se oculta completamente
         document.body.classList.add('shield-blur');
       } else {
+        // Al volver, quitar blur rápido para no molestar al usuario
         setTimeout(() => {
           document.body.classList.remove('shield-blur');
-        }, 800);
+        }, 300);
       }
     };
 
-    // CAPA 3: Detectar cambio de tamaño súbito
+    // CAPA 2: Detectar cambio de tamaño súbito (solo mobile)
     // iOS hace una animación de resize cuando toma screenshot
-    let resizeTimeout: ReturnType<typeof setTimeout>;
+    let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const handleResize = () => {
+      if (!isMobile) return; // Solo en móviles
       const now = Date.now();
-      if (now - lastResizeRef.current < 500) {
-        // Resize muy rápido = posible screenshot
-        document.body.classList.add('shield-blur');
+      if (now - lastResizeRef.current < 300) {
         flashShield();
       }
       lastResizeRef.current = now;
-      
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        document.body.classList.remove('shield-blur');
-      }, 1500);
     };
 
     // CAPA 4: Bloquear multi-touch (3+ dedos = screenshot en iPad)
@@ -196,7 +170,7 @@ export default function ScreenShield() {
 
     // CAPA 9: DevTools detection
     const detectDevTools = () => {
-      const threshold = 160;
+      const threshold = 300; // Más alto para evitar falsos positivos
       const widthDiff = window.outerWidth - window.innerWidth > threshold;
       const heightDiff = window.outerHeight - window.innerHeight > threshold;
       setDevToolsOpen(widthDiff || heightDiff);
@@ -221,10 +195,6 @@ export default function ScreenShield() {
     document.addEventListener('contextmenu', blockContextMenu, true);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     document.addEventListener('dragstart', blockDrag, true);
-    
-    // Listeners específicos de móvil
-    window.addEventListener('blur', handleWindowBlur);
-    window.addEventListener('focus', handleWindowFocus);
     window.addEventListener('resize', handleResize);
     document.addEventListener('touchstart', handleTouchStart, { passive: false });
     document.addEventListener('touchstart', handleTouchStartLongPress, { passive: true });
@@ -238,19 +208,7 @@ export default function ScreenShield() {
     const imgObserver = new MutationObserver(protectImages);
     imgObserver.observe(document.body, { childList: true, subtree: true });
 
-    // Protección anti-screenshot periódica: 
-    // Crear "trampas" de detección cada segundo
-    const periodicCheck = setInterval(() => {
-      // Verificar si el canvas ha sido accedido (posible screen capture)
-      const canvasElements = document.querySelectorAll('canvas');
-      canvasElements.forEach(canvas => {
-        try {
-          canvas.getContext('2d');
-        } catch {
-          flashShield();
-        }
-      });
-    }, 2000);
+
 
     // ============================================
     // === CLEANUP ================================
@@ -260,15 +218,12 @@ export default function ScreenShield() {
       document.removeEventListener('contextmenu', blockContextMenu, true);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.removeEventListener('dragstart', blockDrag, true);
-      window.removeEventListener('blur', handleWindowBlur);
-      window.removeEventListener('focus', handleWindowFocus);
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchstart', handleTouchStartLongPress);
       document.removeEventListener('touchend', handleTouchEnd);
       document.removeEventListener('touchcancel', handleTouchEnd);
       clearInterval(devToolsInterval);
-      clearInterval(periodicCheck);
       clearTimeout(resizeTimeout);
       clearTimeout(longPressTimer);
       imgObserver.disconnect();
